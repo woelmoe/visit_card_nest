@@ -4,4 +4,7 @@ import { Field, ObjectType } from '@nestjs/graphql'
 export class Skill {
   @Field()
   name: string
+
+  @Field()
+  level: number
 }
