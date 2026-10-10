@@ -94,7 +94,7 @@ function createExperience(
   }
 }
 
-async function seedHobbies(): Promise<Hobby> {
+async function seedHobbies() {
   await Promise.all(
     HOBBIES.map((hobby) =>
       prisma.hobby.upsert({
