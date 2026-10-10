@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Profile } from './dto/profile.output.js'
 import { ProfileService } from './profile.service.js'
-import { Experience } from './dto/experience.output.js'
-import { CreateExperienceInput } from './dto/create-experience.input.js'
-import { HobbyService } from './hobby.service.js'
-import { CreateHobbyInput } from './dto/create-hobby.input.js'
-import { Hobby } from './dto/hobby.output.js'
-import { ExperienceService } from './experience.service.js'
+import { Experience } from '../experience/dto/experience.output.js'
+import { CreateExperienceInput } from '../experience/dto/create-experience.input.js'
+import { HobbyService } from '../hobby/hobby.service.js'
+import { CreateHobbyInput } from '../hobby/dto/create-hobby.input.js'
+import { Hobby } from '../hobby/dto/hobby.output.js'
+import { ExperienceService } from '../experience/experience.service.js'
 
 @Resolver(() => Profile)
 export class ProfileResolver {
