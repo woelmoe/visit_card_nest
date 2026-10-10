@@ -81,6 +81,7 @@ export const EXPERIENCE = [
     position: 'Fullstack-разработчик',
     startDate: new Date('2021-07-20'),
     endDate: new Date('2026-06-15'),
+    projectId: 'project-murom',
     skillNames: [
       'TypeScript',
       'Node.js',
@@ -111,6 +112,7 @@ export const EXPERIENCE = [
     position: 'Fullstack-разработчик',
     startDate: new Date('2022-10-10'),
     endDate: new Date('2026-04-10'),
+    projectId: 'project-synerget',
     skillNames: [
       'TypeScript',
       'Node.js',
