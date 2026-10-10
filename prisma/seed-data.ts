@@ -1,61 +1,57 @@
-export const SKILLS: string[] = [
-  'TypeScript',
-  'Node.js',
-  'C++',
-  'JavaScript',
-  'RUSTlang',
+export const SKILLS = [
+  { name: 'TypeScript', level: 5 },
+  { name: 'JavaScript', level: 5 },
+  { name: 'Node.js', level: 5 },
+  { name: 'C++', level: 2 },
+  { name: 'RUSTlang', level: 2 },
 
-  'NestJS',
-  'Express',
-  'GraphQL',
-  'REST',
-  'PostgreSQL',
+  { name: 'NestJS', level: 4 },
+  { name: 'Express', level: 4 },
+  { name: 'GraphQL', level: 4 },
+  { name: 'REST', level: 4 },
+  { name: 'PostgreSQL', level: 4 },
 
-  'React',
-  'Vue 3',
-  'Composition API',
-  'Material-UI',
-  'Vuetify',
-  'Electron',
+  { name: 'React', level: 5 },
+  { name: 'Vue 3', level: 5 },
+  { name: 'Composition API', level: 5 },
+  { name: 'Material-UI', level: 4 },
+  { name: 'Vuetify', level: 4 },
+  { name: 'Electron', level: 5 },
 
-  'RabbitMQ',
-  'AMQP',
+  { name: 'RabbitMQ', level: 4 },
+  { name: 'AMQP', level: 4 },
+  { name: 'WebSocket', level: 5 },
+  { name: 'SSE', level: 5 },
+  { name: 'WebRTC', level: 3 },
+  { name: 'WHEP', level: 3 },
+  { name: 'gRPC', level: 3 },
+  { name: 'HTTP/2', level: 4 },
+  { name: 'mTLS', level: 3 },
 
-  'WebSocket',
-  'SSE',
-  'WebRTC',
-  'WHEP',
-  'gRPC',
-  'Protobuf',
-  'HTTP/2',
-  'mTLS',
+  { name: 'ffmpeg', level: 2 },
+  { name: 'MediaMTX', level: 3 },
+  { name: 'RTSP', level: 3 },
+  { name: 'HLS', level: 3 },
 
-  'ffmpeg',
-  'MediaMTX',
-  'RTSP',
-  'HLS',
+  { name: 'Vite', level: 4 },
+  { name: 'Webpack', level: 4 },
+  { name: 'Git', level: 5 },
+  { name: 'Git Flow', level: 5 },
+  { name: 'БЭМ', level: 5 },
+  { name: 'utility-first', level: 4 },
 
-  'Vite',
-  'Webpack',
-  'Git',
-  'Git Flow',
-  'БЭМ',
-  'utility-first',
+  { name: 'Docker Compose', level: 4 },
+  { name: 'Nginx', level: 3 },
+  { name: 'TLS / SSL', level: 3 },
+  { name: 'OpenSSL', level: 3 },
+  { name: 'JWT', level: 4 },
+  { name: 'RBAC', level: 4 },
+  { name: 'Grafana', level: 3 },
+  { name: 'Prometheus', level: 3 },
 
-  'Docker Compose',
-  'Nginx',
-  'TLS / SSL',
-  'OpenSSL',
-  'JWT',
-  'RBAC',
-  'Grafana',
-  'Prometheus',
-
-  'СКУД',
-  'IoT',
-  'Видеонаблюдение',
-  '1С'
-]
+  { name: 'Видеонаблюдение', level: 4 },
+  { name: '1С', level: 2 }
+] as const
 
 export const PROJECTS = [
   {
@@ -138,3 +134,16 @@ export const EXPERIENCE = [
     ]
   }
 ] as const
+
+export const HOBBIES = [
+  { name: 'Гитара' },
+  { name: 'Бас' },
+  { name: 'Ударные' },
+  { name: 'Вокал' },
+  { name: 'Продюсирование музыки' },
+  { name: 'Звукорежисертво' },
+  { name: 'Страйкбол' },
+  { name: 'Прогулки' },
+  { name: 'Онлайн созвоны' },
+  { name: 'Блоггинг' }
+]

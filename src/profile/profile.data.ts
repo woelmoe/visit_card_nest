@@ -2,6 +2,7 @@ export const myOwnProfile = Object.freeze({
   name: 'Холодняк Никита Владиславович',
   description:
     'Fullstack-разработчик (React, Vue, TypeScript, Node.js, Docker) 35 лет',
+  location: 'Россия г.Ставрополь Ставропольский край',
   links: {
     git: 'https://github.com/woelmoe',
     telegram: '@holodnyak_n',
