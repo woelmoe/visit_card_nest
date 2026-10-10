@@ -38,5 +38,5 @@ model Project {
   name        String
   description String?
   url         String?
-  experiences Experience[]
+  experience  Experience[]
 }
