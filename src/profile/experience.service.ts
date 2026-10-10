@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { CreateExperienceInput } from './dto/create-experience.input.js'
 import { Prisma } from '../generated/prisma/client.js'
+import { UpdateExperienceInput } from './dto/update-experience.input.js'
 
 interface ITransactionData {
   tx: Prisma.TransactionClient
   input: CreateExperienceInput
+}
+
+interface ITransactionUpdateData {
+  id: string
+  tx: Prisma.TransactionClient
+  input: UpdateExperienceInput
 }
 
 @Injectable()
@@ -20,6 +27,44 @@ export class ExperienceService {
     console.log('new experience row created')
     console.timeEnd('create exp')
     return created
+  }
+
+  async update(id: string, input: UpdateExperienceInput) {
+    console.time('create exp')
+
+    const updated = await this.prisma.$transaction((tx) =>
+      this.updateTransaction({ id, tx, input })
+    )
+    console.log('new experience row updated')
+    console.timeEnd('create exp')
+    return updated
+  }
+
+  async updateTransaction(data: ITransactionUpdateData) {
+    const { id, input, tx } = data
+    const { startDate, endDate } = input
+
+    const existing = await tx.experience.findUnique({
+      where: { id }
+    })
+    if (!existing) throw new NotFoundException(`Experience ${id} not found`)
+
+    const employmentId = await this.updateEmployment(data)
+    const projectId = await this.updateProject(data)
+    const skillIds = await this.updateSkills(data)
+
+    return tx.experience.update({
+      where: { id },
+      data: {
+        skills: { connect: skillIds.map((id) => ({ id })) },
+        projectId,
+        employmentId,
+        startDate,
+        endDate
+      },
+      include: { project: true, skills: true, employment: true },
+      relationLoadStrategy: 'join'
+    })
   }
 
   async createTransaction(data: ITransactionData) {
@@ -41,6 +86,57 @@ export class ExperienceService {
       include: { project: true, skills: true, employment: true },
       relationLoadStrategy: 'join'
     })
+  }
+
+  async updateEmployment(data: ITransactionUpdateData): Promise<string | null> {
+    const { id, tx, input } = data
+    if (!input.employment) return null
+
+    const { company, position } = input.employment
+    const updated = await tx.employment.update({
+      where: { id },
+      data: {
+        company,
+        position
+      }
+    })
+
+    return updated.id
+  }
+
+  async updateProject(
+    data: ITransactionUpdateData
+  ): Promise<string | undefined> {
+    const { id, tx, input } = data
+    if (!input.project) return
+
+    const { name, description, url } = input.project
+    const updated = await tx.project.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        url
+      }
+    })
+    return updated.id
+  }
+
+  async updateSkills(data: ITransactionUpdateData): Promise<string[]> {
+    const { tx, input } = data
+    if (!input.skills || input.skills.length) return []
+
+    const skills = await Promise.all(
+      input.skills.map(async (skill) => {
+        return tx.skill.upsert({
+          where: { name: skill.name },
+          update: { level: skill.level },
+          create: { name: skill.name, level: skill.level }
+        })
+      })
+    )
+
+    return skills.map((s) => s.id)
   }
 
   async createEmployment(data: ITransactionData): Promise<string | null> {
@@ -73,7 +169,7 @@ export class ExperienceService {
 
   async createSkills(data: ITransactionData): Promise<string[]> {
     const { tx, input } = data
-    if (!input.skills || input.skills.length) return []
+    if (!input.skills || !input.skills.length) return []
 
     const skills = await Promise.all(
       input.skills.map(async (skill) =>

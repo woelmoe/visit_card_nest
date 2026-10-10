@@ -1,4 +1,9 @@
-import { IsArray, IsDate, IsOptional, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  ValidateNested
+} from 'class-validator'
 import { Type } from 'class-transformer'
 import { Field, InputType } from '@nestjs/graphql'
 import { SkillInput } from './skill.input.js'
@@ -26,11 +31,11 @@ export class CreateExperienceInput {
   employment?: EmploymentInput
 
   @Field()
-  @IsDate()
+  @IsDateString()
   startDate: Date
 
   @Field({ nullable: true })
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   endDate?: Date
 }
