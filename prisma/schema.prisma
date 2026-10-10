@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -14,8 +15,8 @@ model Experience {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  position String?
-  company  String?
+  employmentId String?
+  employment   Employment? @relation(fields: [employmentId], references: [id], onDelete: SetNull)
 
   startDate DateTime
   endDate   DateTime?
@@ -23,8 +24,14 @@ model Experience {
   @@index([projectId])
   @@index([startDate])
   @@index([endDate])
-  @@index([company])
-  @@index([position])
+  @@index([employmentId])
+}
+
+model Employment {
+  id          String       @id @default(uuid())
+  position    String
+  company     String
+  experiences Experience[]
 }
 
 model Skill {
