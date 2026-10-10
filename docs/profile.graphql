@@ -15,13 +15,8 @@ query GetProfile {
       position
       startDate
       endDate
-      projects {
-        name
-        url
-      }
-      skills {
-        name
-      }
+      projects {name url}
+      skills {name}
     }
     projects {
       name

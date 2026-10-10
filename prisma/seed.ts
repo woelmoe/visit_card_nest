@@ -34,7 +34,7 @@ async function seedSkills(): Promise<Skills> {
   const skills = await Promise.all(
     SKILLS.map((skill) =>
       prisma.skill.upsert({
-        where: { id: skill.name },
+        where: { name: skill.name },
         update: {},
         create: skill
       })
@@ -68,11 +68,26 @@ async function seedExperience(skills: Map<string, string>) {
   )
 }
 
+function connectEmployment(
+  employment: (typeof EXPERIENCE)[number]['employment']
+) {
+  return {
+    connectOrCreate: {
+      where: { id: employment.id },
+      create: {
+        id: employment.id,
+        company: employment.company,
+        position: employment.position
+      }
+    }
+  }
+}
+
 function createExperience(
   experience: (typeof EXPERIENCE)[number],
   skillMap: Skills
 ): Prisma.ExperienceCreateInput {
-  const { id, company, position, startDate, endDate, projectId, skillNames } =
+  const { id, employment, startDate, endDate, projectId, skillNames } =
     experience
   const skills = {
     connect: skillNames.map((name) => {
@@ -83,8 +98,7 @@ function createExperience(
   }
   return {
     id,
-    company,
-    position,
+    employment: connectEmployment(employment),
     startDate,
     endDate,
     skills,

@@ -12,6 +12,7 @@ export class ProfileService {
 
     const experience = await this.prisma.experience.findMany({
       include: {
+        employment: true,
         project: true,
         skills: true
       }

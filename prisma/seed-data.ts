@@ -73,8 +73,11 @@ export const PROJECTS = [
 export const EXPERIENCE = [
   {
     id: 'exp-stilsoft-murom',
-    company: 'Стилсофт',
-    position: 'Fullstack-разработчик',
+    employment: {
+      id: 'emp-stilsoft-murom',
+      company: 'Стилсофт',
+      position: 'Fullstack-разработчик'
+    },
     startDate: new Date('2021-07-20'),
     endDate: new Date('2026-06-15'),
     projectId: 'project-murom',
@@ -104,8 +107,11 @@ export const EXPERIENCE = [
   },
   {
     id: 'exp-stilsoft-synerget',
-    company: 'Стилсофт',
-    position: 'Fullstack-разработчик',
+    employment: {
+      id: 'emp-stilsoft-synerget',
+      company: 'Стилсофт',
+      position: 'Fullstack-разработчик'
+    },
     startDate: new Date('2022-10-10'),
     endDate: new Date('2026-04-10'),
     projectId: 'project-synerget',
@@ -141,9 +147,9 @@ export const HOBBIES = [
   { name: 'Ударные' },
   { name: 'Вокал' },
   { name: 'Продюсирование музыки' },
-  { name: 'Звукорежисертво' },
+  { name: 'Звукорежисерство' },
   { name: 'Страйкбол' },
   { name: 'Прогулки' },
   { name: 'Онлайн созвоны' },
   { name: 'Блоггинг' }
-]
+] as const
