@@ -8,7 +8,7 @@ export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
   async getProfile(): Promise<Profile> {
-    const { name, links, description } = myOwnProfile
+    const { name, location, links, description } = myOwnProfile
 
     const experience = await this.prisma.experience.findMany({
       include: {
@@ -17,13 +17,16 @@ export class ProfileService {
       }
     })
     const skills = await this.prisma.skill.findMany()
+    const hobbies = await this.prisma.hobby.findMany()
 
     return {
       name,
+      location,
       description,
       links,
       skills,
-      experience
+      experience,
+      hobbies
     }
   }
 }

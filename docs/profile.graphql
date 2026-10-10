@@ -1,0 +1,32 @@
+query GetProfile {
+  profile {
+    name
+    location
+    description
+    links {
+      git
+      telegram
+      email
+      hh
+    }
+    skills
+    experience {
+      company
+      position
+      startDate
+      endDate
+      projects {
+        name
+        url
+      }
+      skills {
+        name
+      }
+    }
+    projects {
+      name
+      url
+    }
+    hobbies
+  }
+}
