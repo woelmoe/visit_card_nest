@@ -1,12 +1,4 @@
 -- CreateTable
-CREATE TABLE "Skill" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Experience" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
@@ -16,6 +8,15 @@ CREATE TABLE "Experience" (
     "endDate" TIMESTAMP(3),
 
     CONSTRAINT "Experience_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Skill" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "level" INTEGER NOT NULL DEFAULT 1,
+
+    CONSTRAINT "Skill_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -29,15 +30,20 @@ CREATE TABLE "Project" (
 );
 
 -- CreateTable
+CREATE TABLE "Hobby" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Hobby_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_ExperienceToSkill" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_ExperienceToSkill_AB_pkey" PRIMARY KEY ("A","B")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "Skill_name_key" ON "Skill"("name");
 
 -- CreateIndex
 CREATE INDEX "Experience_projectId_idx" ON "Experience"("projectId");
@@ -53,6 +59,12 @@ CREATE INDEX "Experience_company_idx" ON "Experience"("company");
 
 -- CreateIndex
 CREATE INDEX "Experience_position_idx" ON "Experience"("position");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Skill_name_key" ON "Skill"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Hobby_name_key" ON "Hobby"("name");
 
 -- CreateIndex
 CREATE INDEX "_ExperienceToSkill_B_index" ON "_ExperienceToSkill"("B");

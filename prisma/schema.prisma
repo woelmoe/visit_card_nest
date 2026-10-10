@@ -7,12 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model Skill {
-  id         String       @id @default(cuid())
-  name       String       @unique
-  experience Experience[]
-}
-
 model Experience {
   id     String  @id @default(cuid())
   skills Skill[]
@@ -33,10 +27,22 @@ model Experience {
   @@index([position])
 }
 
+model Skill {
+  id         String       @id @default(cuid())
+  name       String       @unique
+  level      Int          @default(1)
+  experience Experience[]
+}
+
 model Project {
   id          String       @id @default(cuid())
   name        String
   description String?
   url         String?
   experience  Experience[]
+}
+
+model Hobby {
+  id   String @id @default(cuid())
+  name String @unique
 }

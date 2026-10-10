@@ -1,7 +1,8 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client.js'
-import { EXPERIENCE, PROJECTS, SKILLS } from './seed-data.js'
+import { EXPERIENCE, HOBBIES, PROJECTS, SKILLS } from './seed-data.js'
 import { Prisma } from '../src/generated/prisma/browser.js'
+import { Hobby } from '../src/generated/prisma/browser.js'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL
@@ -16,6 +17,7 @@ async function main() {
   const skills = await seedSkills()
   await seedProject()
   await seedExperience(skills)
+  await seedHobbies()
 
   console.timeEnd('seeding')
 }
@@ -30,11 +32,11 @@ main()
 
 async function seedSkills(): Promise<Skills> {
   const skills = await Promise.all(
-    SKILLS.map((name) =>
+    SKILLS.map((skill) =>
       prisma.skill.upsert({
-        where: { name },
+        where: { id: skill.name },
         update: {},
-        create: { name }
+        create: skill
       })
     )
   )
@@ -90,4 +92,16 @@ function createExperience(
       project: { connect: { id: projectId } }
     })
   }
+}
+
+async function seedHobbies(): Promise<Hobby> {
+  await Promise.all(
+    HOBBIES.map((hobby) =>
+      prisma.hobby.upsert({
+        where: { id: hobby.name },
+        update: {},
+        create: hobby
+      })
+    )
+  )
 }
