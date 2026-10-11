@@ -9,19 +9,29 @@ query GetProfile {
       git
       hh
     }
-    experience {
-      id
-      startDate
-      endDate
-      employment { company position }
-      project { name url }
-      skills { name level }
-    }
     skills {
       name
       level
     }
+    experience {
+      id
+      startDate
+      endDate
+      employment {
+        company
+        position
+      }
+      project {
+        name
+        url
+      }
+      skills {
+        name
+        level
+      }
+    }
     hobbies {
+      id
       name
     }
   }

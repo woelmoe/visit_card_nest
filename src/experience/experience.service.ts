@@ -3,10 +3,21 @@ import { PrismaService } from '../prisma/prisma.service.js'
 import { CreateExperienceInput } from './dto/create-experience.input.js'
 import { Prisma } from '../generated/prisma/client.js'
 import { UpdateExperienceInput } from './dto/update-experience.input.js'
+import { EmploymentInput } from './dto/employment.input.js'
+import { ProjectInput } from './dto/projects.input.js'
 
 interface ITransactionData {
   tx: Prisma.TransactionClient
   input: CreateExperienceInput
+}
+
+interface ICreateEmploymentData {
+  tx: Prisma.TransactionClient
+  input: EmploymentInput
+}
+interface ICreateProjectData {
+  tx: Prisma.TransactionClient
+  input: ProjectInput
 }
 
 interface ITransactionUpdateData {
@@ -51,8 +62,7 @@ export class ExperienceService {
 
   private async deleteTransaction(id: string, tx: Prisma.TransactionClient) {
     const existing = await tx.experience.findUnique({
-      where: { id },
-      include: { skills: true }
+      where: { id }
     })
     if (!existing) throw new NotFoundException(`Experience ${id} not found`)
 
@@ -72,8 +82,6 @@ export class ExperienceService {
       if (isUsed === 0) {
         await tx.employment.delete({ where: { id: existing.employmentId } })
       }
-
-      return true
     }
   }
 
@@ -90,15 +98,18 @@ export class ExperienceService {
     const projectId = await this.updateProject(data)
     const skillIds = await this.updateSkills(data)
 
+    const newData: Prisma.ExperienceUpdateInput = {}
+
+    if (startDate !== undefined) newData.startDate = startDate
+    if (endDate !== undefined) newData.endDate = endDate
+    if (!!projectId) newData.project = { connect: { id: projectId } }
+    if (!!employmentId) newData.employment = { connect: { id: employmentId } }
+    if (!!skillIds?.length)
+      newData.skills = { set: skillIds.map((id) => ({ id })) }
+
     return tx.experience.update({
       where: { id },
-      data: {
-        skills: { connect: skillIds.map((id) => ({ id })) },
-        projectId,
-        employmentId,
-        startDate,
-        endDate
-      },
+      data: newData,
       include: { project: true, skills: true, employment: true },
       relationLoadStrategy: 'join'
     })
@@ -108,18 +119,29 @@ export class ExperienceService {
     const { tx, input } = data
     const { startDate, endDate } = input
 
-    const projectId = await this.createProject(data)
-    const employmentId = await this.createEmployment(data)
+    const projectId = await this.createProject({ tx, input: input.project })
+
+    const employmentId = !input.employment
+      ? undefined
+      : await this.createEmployment({
+          tx,
+          input: input.employment
+        })
+
     const skillIds = await this.createSkills(data)
 
+    const newData: Prisma.ExperienceCreateInput = {
+      startDate,
+      project: { connect: { id: projectId } }
+    }
+
+    if (endDate !== undefined) newData.endDate = endDate
+    if (!!employmentId) newData.employment = { connect: { id: employmentId } }
+    if (!!skillIds?.length)
+      newData.skills = { connect: skillIds.map((id) => ({ id })) }
+
     return tx.experience.create({
-      data: {
-        skills: { connect: skillIds.map((id) => ({ id })) },
-        projectId,
-        employmentId,
-        startDate,
-        endDate
-      },
+      data: newData,
       include: { project: true, skills: true, employment: true },
       relationLoadStrategy: 'join'
     })
@@ -127,13 +149,25 @@ export class ExperienceService {
 
   private async updateEmployment(
     data: ITransactionUpdateData
-  ): Promise<string | null> {
+  ): Promise<string | undefined> {
     const { id, tx, input } = data
-    if (!input.employment) return null
+    if (!input.employment) return
+
+    const existing = await tx.experience.findUnique({
+      where: { id },
+      select: { employmentId: true }
+    })
+
+    if (!existing?.employmentId) {
+      return await this.createEmployment({
+        tx: data.tx,
+        input: input.employment
+      })
+    }
 
     const { company, position } = input.employment
     const updated = await tx.employment.update({
-      where: { id },
+      where: { id: existing?.employmentId },
       data: {
         company,
         position
@@ -149,9 +183,14 @@ export class ExperienceService {
     const { id, tx, input } = data
     if (!input.project) return
 
+    const existing = await tx.experience.findUnique({
+      where: { id },
+      select: { projectId: true }
+    })
+
     const { name, description, url } = input.project
     const updated = await tx.project.update({
-      where: { id },
+      where: { id: existing?.projectId },
       data: {
         name,
         description,
@@ -161,9 +200,11 @@ export class ExperienceService {
     return updated.id
   }
 
-  private async updateSkills(data: ITransactionUpdateData): Promise<string[]> {
+  private async updateSkills(
+    data: ITransactionUpdateData
+  ): Promise<string[] | null> {
     const { tx, input } = data
-    if (!input.skills || input.skills.length) return []
+    if (!input.skills || input.skills.length === 0) return null
 
     const skills = await Promise.all(
       input.skills.map(async (skill) => {
@@ -178,13 +219,10 @@ export class ExperienceService {
     return skills.map((s) => s.id)
   }
 
-  private async createEmployment(
-    data: ITransactionData
-  ): Promise<string | null> {
+  private async createEmployment(data: ICreateEmploymentData): Promise<string> {
     const { tx, input } = data
-    if (!input.employment) return null
 
-    const { company, position } = input.employment
+    const { company, position } = input
     const created = await tx.employment.create({
       data: {
         company,
@@ -195,9 +233,9 @@ export class ExperienceService {
     return created.id
   }
 
-  private async createProject(data: ITransactionData): Promise<string> {
+  private async createProject(data: ICreateProjectData): Promise<string> {
     const { tx, input } = data
-    const { name, description, url } = input.project
+    const { name, description, url } = input
     const created = await tx.project.create({
       data: {
         name,
@@ -208,9 +246,11 @@ export class ExperienceService {
     return created.id
   }
 
-  private async createSkills(data: ITransactionData): Promise<string[]> {
+  private async createSkills(
+    data: ITransactionData
+  ): Promise<string[] | undefined> {
     const { tx, input } = data
-    if (!input.skills || !input.skills.length) return []
+    if (!input.skills || input.skills.length === 0) return undefined
 
     const skills = await Promise.all(
       input.skills.map(async (skill) =>
