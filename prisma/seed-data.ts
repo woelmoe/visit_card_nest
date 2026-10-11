@@ -5,11 +5,11 @@ export const SKILLS = [
   { name: 'C++', level: 2 },
   { name: 'RUSTlang', level: 2 },
 
-  { name: 'NestJS', level: 4 },
-  { name: 'Express', level: 4 },
-  { name: 'GraphQL', level: 4 },
-  { name: 'REST', level: 4 },
-  { name: 'PostgreSQL', level: 4 },
+  { name: 'NestJS', level: 5 },
+  { name: 'Express', level: 5 },
+  { name: 'GraphQL', level: 5 },
+  { name: 'REST', level: 5 },
+  { name: 'PostgreSQL', level: 5 },
 
   { name: 'React', level: 5 },
   { name: 'Vue 3', level: 5 },
