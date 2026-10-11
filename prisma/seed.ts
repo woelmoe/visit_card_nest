@@ -1,8 +1,13 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client.js'
-import { EXPERIENCE, HOBBIES, PROJECTS, SKILLS } from './seed-data.js'
+import {
+  EXPERIENCE,
+  IExperienceSeed,
+  HOBBIES,
+  PROJECTS,
+  SKILLS
+} from './seed-data.js'
 import { Prisma } from '../src/generated/prisma/browser.js'
-import { Hobby } from '../src/generated/prisma/browser.js'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL
@@ -69,7 +74,7 @@ async function seedExperience(skills: Map<string, string>) {
 }
 
 function connectEmployment(
-  employment: (typeof EXPERIENCE)[number]['employment']
+  employment: NonNullable<(typeof EXPERIENCE)[number]['employment']>
 ) {
   return {
     connectOrCreate: {
@@ -84,11 +89,12 @@ function connectEmployment(
 }
 
 function createExperience(
-  experience: (typeof EXPERIENCE)[number],
+  experience: IExperienceSeed,
   skillMap: Skills
 ): Prisma.ExperienceCreateInput {
   const { id, employment, startDate, endDate, projectId, skillNames } =
     experience
+
   const skills = {
     connect: skillNames.map((name) => {
       const id = skillMap.get(name)
@@ -96,15 +102,14 @@ function createExperience(
       return { id }
     })
   }
+
   return {
     id,
-    employment: connectEmployment(employment),
+    ...(employment && { employment: connectEmployment(employment) }),
     startDate,
     endDate,
     skills,
-    ...(projectId && {
-      project: { connect: { id: projectId } }
-    })
+    project: { connect: { id: projectId } }
   }
 }
 
