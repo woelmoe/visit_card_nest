@@ -1,27 +1,28 @@
 query GetProfile {
   profile {
     name
-    location
     description
+    location
     links {
-      git
-      telegram
       email
+      telegram
+      git
       hh
     }
-    skills
     experience {
-      company
-      position
+      id
       startDate
       endDate
-      projects {name url}
-      skills {name}
+      employment { company position }
+      project { name url }
+      skills { name level }
     }
-    projects {
+    skills {
       name
-      url
+      level
     }
-    hobbies
+    hobbies {
+      name
+    }
   }
 }
