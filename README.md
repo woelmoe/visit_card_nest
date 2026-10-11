@@ -24,3 +24,46 @@
 # visit_card_nest
 
 визитная карточка nest-разработчика
+
+## Query для получения визитной карточки
+
+```graphql
+query GetProfile {
+  profile {
+    name
+    description
+    location
+    links {
+      email
+      telegram
+      git
+      hh
+    }
+    skills {
+      name
+      level
+    }
+    experience {
+      id
+      startDate
+      endDate
+      employment {
+        company
+        position
+      }
+      project {
+        name
+        url
+      }
+      skills {
+        name
+        level
+      }
+    }
+    hobbies {
+      id
+      name
+    }
+  }
+}
+```
