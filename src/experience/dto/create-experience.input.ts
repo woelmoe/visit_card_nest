@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsDate,
   IsDateString,
   IsOptional,
   ValidateNested
@@ -31,11 +32,11 @@ export class CreateExperienceInput {
   employment?: EmploymentInput
 
   @Field()
-  @IsDateString()
+  @IsDate()
   startDate: Date
 
   @Field({ nullable: true })
-  @IsDateString()
   @IsOptional()
+  @IsDate()
   endDate?: Date
 }

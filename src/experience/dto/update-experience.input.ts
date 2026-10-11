@@ -2,6 +2,7 @@ import { Field, InputType, Int } from '@nestjs/graphql'
 import { Type } from 'class-transformer'
 import {
   IsArray,
+  IsDate,
   IsDateString,
   IsInt,
   IsOptional,
@@ -50,11 +51,11 @@ export class UpdateExperienceInput {
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   startDate?: Date
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   endDate?: Date
 }

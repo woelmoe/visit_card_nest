@@ -1,6 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { CreateHobbyInput } from './dto/create-hobby.input.js'
+import { PhilosophicalException } from '../common/philosophical.exception.js'
+import { HobbyExistsException } from '../common/hobby-exists.exception.js'
 
 @Injectable()
 export class HobbyService {
@@ -11,7 +13,7 @@ export class HobbyService {
       where: { name: input.name }
     })
     if (existing) {
-      throw new ConflictException(`Hobby ${input.name} already exists`)
+      throw new HobbyExistsException(input.name)
     }
 
     return this.prisma.hobby.create({
@@ -19,5 +21,14 @@ export class HobbyService {
         name: input.name
       }
     })
+  }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      await this.prisma.hobby.delete({ where: { id } })
+      return true
+    } catch (error) {
+      throw new PhilosophicalException(id)
+    }
   }
 }

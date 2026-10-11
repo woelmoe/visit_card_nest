@@ -19,7 +19,7 @@ interface ITransactionUpdateData {
 export class ExperienceService {
   constructor(private prisma: PrismaService) {}
 
-  async create(input: CreateExperienceInput) {
+  public async create(input: CreateExperienceInput) {
     console.time('create exp')
     const created = await this.prisma.$transaction((tx) =>
       this.createTransaction({ tx, input })
@@ -29,18 +29,55 @@ export class ExperienceService {
     return created
   }
 
-  async update(id: string, input: UpdateExperienceInput) {
-    console.time('create exp')
+  public async update(id: string, input: UpdateExperienceInput) {
+    console.time('update exp')
 
     const updated = await this.prisma.$transaction((tx) =>
       this.updateTransaction({ id, tx, input })
     )
     console.log('new experience row updated')
-    console.timeEnd('create exp')
+    console.timeEnd('update exp')
     return updated
   }
 
-  async updateTransaction(data: ITransactionUpdateData) {
+  public async delete(id: string): Promise<boolean> {
+    console.time('delete exp')
+
+    await this.prisma.$transaction((tx) => this.deleteTransaction(id, tx))
+    console.log('new experience row deleted')
+    console.timeEnd('delete exp')
+    return true
+  }
+
+  private async deleteTransaction(id: string, tx: Prisma.TransactionClient) {
+    const existing = await tx.experience.findUnique({
+      where: { id },
+      include: { skills: true }
+    })
+    if (!existing) throw new NotFoundException(`Experience ${id} not found`)
+
+    await tx.experience.update({
+      where: { id },
+      data: { skills: { set: [] } }
+    })
+
+    const { employmentId } = existing
+    await tx.experience.delete({ where: { id } })
+
+    if (existing.employmentId) {
+      const isUsed = await tx.experience.count({
+        where: { employmentId }
+      })
+
+      if (isUsed === 0) {
+        await tx.employment.delete({ where: { id: existing.employmentId } })
+      }
+
+      return true
+    }
+  }
+
+  private async updateTransaction(data: ITransactionUpdateData) {
     const { id, input, tx } = data
     const { startDate, endDate } = input
 
@@ -67,7 +104,7 @@ export class ExperienceService {
     })
   }
 
-  async createTransaction(data: ITransactionData) {
+  private async createTransaction(data: ITransactionData) {
     const { tx, input } = data
     const { startDate, endDate } = input
 
@@ -88,7 +125,9 @@ export class ExperienceService {
     })
   }
 
-  async updateEmployment(data: ITransactionUpdateData): Promise<string | null> {
+  private async updateEmployment(
+    data: ITransactionUpdateData
+  ): Promise<string | null> {
     const { id, tx, input } = data
     if (!input.employment) return null
 
@@ -104,7 +143,7 @@ export class ExperienceService {
     return updated.id
   }
 
-  async updateProject(
+  private async updateProject(
     data: ITransactionUpdateData
   ): Promise<string | undefined> {
     const { id, tx, input } = data
@@ -122,7 +161,7 @@ export class ExperienceService {
     return updated.id
   }
 
-  async updateSkills(data: ITransactionUpdateData): Promise<string[]> {
+  private async updateSkills(data: ITransactionUpdateData): Promise<string[]> {
     const { tx, input } = data
     if (!input.skills || input.skills.length) return []
 
@@ -139,7 +178,9 @@ export class ExperienceService {
     return skills.map((s) => s.id)
   }
 
-  async createEmployment(data: ITransactionData): Promise<string | null> {
+  private async createEmployment(
+    data: ITransactionData
+  ): Promise<string | null> {
     const { tx, input } = data
     if (!input.employment) return null
 
@@ -154,7 +195,7 @@ export class ExperienceService {
     return created.id
   }
 
-  async createProject(data: ITransactionData): Promise<string> {
+  private async createProject(data: ITransactionData): Promise<string> {
     const { tx, input } = data
     const { name, description, url } = input.project
     const created = await tx.project.create({
@@ -167,7 +208,7 @@ export class ExperienceService {
     return created.id
   }
 
-  async createSkills(data: ITransactionData): Promise<string[]> {
+  private async createSkills(data: ITransactionData): Promise<string[]> {
     const { tx, input } = data
     if (!input.skills || !input.skills.length) return []
 
