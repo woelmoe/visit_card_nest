@@ -11,7 +11,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true
   })
   app.useGlobalPipes(validation)
-  await app.listen(port)
+  await app.listen(port, '0.0.0.0')
 }
 await bootstrap()
 console.log(`listen on http://localhost:${port}`)
